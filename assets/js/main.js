@@ -282,7 +282,8 @@
       // Thực hiện reCAPTCHA
     grecaptcha.enterprise.execute('6Ld8z0oqAAAAAAPP31a4zZNCjc4xMfd1xzO1pqzm', {action: 'submit'}).then((token) => {
       verifyToken(token).then((data) => {
-        if (data.token_properties.valid) {
+        console.log(data)
+        /* if (data.token_properties.valid) {
           // Gửi email
           emailjs.sendForm('service_ae4u0ah', 'template_9w8g2pj', this)
             .then(() => {
@@ -305,7 +306,7 @@
           this.querySelector('.loading').classList.remove('d-block');
           this.querySelector('.error-message').innerHTML = 'reCAPTCHA verification failed. Please try again.';
           this.querySelector('.error-message').classList.add('d-block');
-        }
+        } */
       });
     });
  })
