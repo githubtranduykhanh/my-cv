@@ -267,4 +267,36 @@
    */
   new PureCounter();
 
+
+
+  emailjs.init('VLtn_gc87G44KneJ6');
+
+
+  document.getElementById('contact-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+ 
+      this.querySelector('.loading').classList.add('d-block');
+      this.querySelector('.error-message').classList.remove('d-block');
+      this.querySelector('.sent-message').classList.remove('d-block');
+
+      // Gửi email
+      emailjs.sendForm('service_ae4u0ah', 'template_9w8g2pj', this)
+        .then(() => {
+          // Thành công
+          document.getElementById('contact-form').reset();
+          document.querySelector('.loading').classList.remove('d-block');
+          document.querySelector('.sent-message').classList.add('d-block');
+          setTimeout(() => {
+            document.querySelector('.sent-message').classList.remove('d-block');
+          }, 3000);
+        })
+        .catch((error) => {
+          // Thất bại
+          document.querySelector('.loading').classList.remove('d-block');
+          document.querySelector('.error-message').innerHTML = 'Failed to send the email. Please try again.';
+          document.querySelector('.error-message').classList.add('d-block');
+        });
+    
+ })
+
 })()
