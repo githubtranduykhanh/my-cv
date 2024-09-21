@@ -279,24 +279,54 @@
       this.querySelector('.error-message').classList.remove('d-block');
       this.querySelector('.sent-message').classList.remove('d-block');
 
-      // Gửi email
-      emailjs.sendForm('service_ae4u0ah', 'template_9w8g2pj', this)
-        .then(() => {
-          // Thành công
-          document.getElementById('contact-form').reset();
-          document.querySelector('.loading').classList.remove('d-block');
-          document.querySelector('.sent-message').classList.add('d-block');
-          setTimeout(() => {
-            document.querySelector('.sent-message').classList.remove('d-block');
-          }, 3000);
-        })
-        .catch((error) => {
-          // Thất bại
-          document.querySelector('.loading').classList.remove('d-block');
-          document.querySelector('.error-message').innerHTML = 'Failed to send the email. Please try again.';
-          document.querySelector('.error-message').classList.add('d-block');
-        });
-    
+      // Thực hiện reCAPTCHA
+    grecaptcha.enterprise.execute('6Ld8z0oqAAAAAAPP31a4zZNCjc4xMfd1xzO1pqzm', {action: 'submit'}).then((token) => {
+      verifyToken(token).then((data) => {
+        if (data.token_properties.valid) {
+          // Gửi email
+          emailjs.sendForm('service_ae4u0ah', 'template_9w8g2pj', this)
+            .then(() => {
+              // Thành công
+              document.getElementById('contact-form').reset();
+              document.querySelector('.loading').classList.remove('d-block');
+              document.querySelector('.sent-message').classList.add('d-block');
+              setTimeout(() => {
+                document.querySelector('.sent-message').classList.remove('d-block');
+              }, 3000);
+            })
+            .catch((error) => {
+              // Thất bại
+              document.querySelector('.loading').classList.remove('d-block');
+              document.querySelector('.error-message').innerHTML = 'Failed to send the email. Please try again.';
+              document.querySelector('.error-message').classList.add('d-block');
+            });
+        } else {
+          // Token không hợp lệ
+          this.querySelector('.loading').classList.remove('d-block');
+          this.querySelector('.error-message').innerHTML = 'reCAPTCHA verification failed. Please try again.';
+          this.querySelector('.error-message').classList.add('d-block');
+        }
+      });
+    });
  })
 
+
+ async function verifyToken(token) {
+  const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/my-cv-1726911024617/assessments?key=AIzaSyAi6MX4cQz2ytCvQBb8RDqkKnP4JP2JWDY`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      event: {
+        token: token,
+        expectedAction: 'submit',
+        siteKey: '6Ld8z0oqAAAAAAPP31a4zZNCjc4xMfd1xzO1pqzm'
+      }
+    })
+  });
+
+  const data = await response.json();
+  return data;
+}
 })()
